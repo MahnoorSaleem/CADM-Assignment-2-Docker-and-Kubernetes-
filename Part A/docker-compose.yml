@@ -1,0 +1,64 @@
+version: '3'
+services:
+  rabbitmq:
+    image: rabbitmq:management # This includes the RabbitMQ management plugin
+    ports:
+      - "5672:5672" # RabbitMQ default port
+      - "15672:15672" # RabbitMQ management interface port
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: "guest"
+      RABBITMQ_DEFAULT_PASS: "guest"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:15672/"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  shipping-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.shipping
+    ports:
+      - "5002:5002"
+    depends_on:
+      - rabbitmq
+    restart: unless-stopped
+
+  data-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.data
+    depends_on:
+      - rabbitmq
+    restart: unless-stopped
+
+  users-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.users
+    depends_on:
+      - rabbitmq
+    restart: unless-stopped
+
+  order-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.order
+    depends_on:
+      - rabbitmq
+    restart: unless-stopped
+
+  webhook-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.webhook
+    ports:
+      - "5005:5005"
+    depends_on:
+      - rabbitmq
+    restart: unless-stopped
+
+volumes:
+  rabbitmq_data:

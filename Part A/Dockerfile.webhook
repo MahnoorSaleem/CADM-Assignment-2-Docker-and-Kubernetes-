@@ -1,0 +1,14 @@
+FROM node:14.17.6
+
+WORKDIR /app
+
+# Copy necessary files for the webhook service
+COPY webhook-service/package*.json webhook-service/server.js ./
+
+# Install dependencies for the webhook service
+RUN npm install
+
+# Copy the rmq.js file from the central lib folder
+COPY lib/rmq.js ./lib/rmq.js
+
+CMD ["node", "server.js"]

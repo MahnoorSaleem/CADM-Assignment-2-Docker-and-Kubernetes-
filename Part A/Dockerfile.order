@@ -1,0 +1,16 @@
+# Dockerfile.data
+FROM node:14.17.6
+
+# Set the working directory for the app
+WORKDIR /app
+
+# Copy necessary files for the data service
+COPY order-service/package*.json order-service/server.js ./
+
+# Install dependencies for the data service
+RUN npm install
+
+# Create the lib directory and copy the rmq.js file from the central lib folder
+COPY lib/rmq.js ./lib/rmq.js
+
+CMD ["node", "server.js"]

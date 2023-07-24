@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: MAHNORR_SALEEM-17371
+  labels:
+    app: redis
+spec:
+  containers:
+    - name: redis-container
+      image: redis:latest
+      ports:
+        - containerPort: 1737
